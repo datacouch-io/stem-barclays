@@ -1,0 +1,69 @@
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Load the data from S3
+datasource0 = glueContext.create_dynamic_frame.from_options(
+    connection_type="s3",
+    connection_options={"paths": ["s3://your-bucket/customer_orders_with_addresses.json"]},
+    format="json"
+)
+
+# Example Transformation: Select specific fields
+selected_fields = SelectFields.apply(
+    frame=datasource0,
+    paths=["order_id", "customer_id", "order_date", "order_status", "order_total"]
+)
+
+# Example Transformation: Filter orders with total greater than 100
+filtered_orders = Filter.apply(
+    frame=selected_fields,
+    f=lambda x: x["order_total"] > 100
+)
+
+# Example Transformation: Flatten nested structure (addresses and items)
+address_fields = SelectFields.apply(
+    frame=datasource0,
+    paths=["order_id", "shipping_address.street", "shipping_address.city", "shipping_address.state", "shipping_address.zip_code", "shipping_address.country"]
+)
+
+# Example Transformation: Relationalize nested JSON fields
+relationalized = Relationalize.apply(
+    frame=datasource0,
+    staging_path="s3://your-temp-bucket/temp/",
+    name="root"
+)
+
+# Writing the output back to S3 in Parquet format
+datasink4 = glueContext.write_dynamic_frame.from_options(
+    frame=filtered_orders,
+    connection_type="s3",
+    connection_options={"path": "s3://your-output-bucket/filtered_orders/"},
+    format="parquet"
+)
+
+datasink5 = glueContext.write_dynamic_frame.from_options(
+    frame=address_fields,
+    connection_type="s3",
+    connection_options={"path": "s3://your-output-bucket/address_fields/"},
+    format="parquet"
+)
+
+datasink6 = glueContext.write_dynamic_frame.from_options(
+    frame=relationalized,
+    connection_type="s3",
+    connection_options={"path": "s3://your-output-bucket/relationalized_data/"},
+    format="parquet"
+)
+
+job.commit()

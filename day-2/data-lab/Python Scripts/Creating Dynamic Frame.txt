@@ -1,0 +1,94 @@
+
+####  Run this cell to set up and start your interactive session.
+
+%idle_timeout 2880
+%glue_version 4.0
+%worker_type G.1X
+%number_of_workers 5
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+  
+sc = SparkContext.getOrCreate()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+
+#### Example: Create a DynamicFrame from a table in the AWS Glue Data Catalog and display its schema
+
+# Define the input file path and delimiter
+input_file_path = 's3://awstrainingjune01/Input_Data/csv/customers-100.csv'
+delimiter = ','
+
+# Read the CSV file
+datasource0 = glueContext.create_dynamic_frame.from_options(
+    connection_type = "s3",
+    connection_options = {"paths": [input_file_path], "recurse": True},
+    format = "csv",
+    format_options = {
+        "withHeader": True,
+        "separator": delimiter
+    }
+)
+
+datasource0.printSchema();
+
+#### Example: Convert the DynamicFrame to a Spark DataFrame and display a sample of the data
+
+df = datasource0.toDF()
+df.show()
+
+record_count = dyf.count()
+print(f"Total records: {record_count}")
+
+#### Example: Convert the DynamicFrame to a Spark DataFrame and display a sample of the data from aws glue database and tables
+
+dyf = glueContext.create_dynamic_frame.from_catalog(database='db_aws_training_exercises', table_name='cst_tbl_customer_master')
+dyf.printSchema()
+
+#### Example: Write the data in the DynamicFrame to a location in Amazon S3 and a table for it in the AWS Glue Data Catalog
+
+s3output = glueContext.getSink(
+  path="s3://awstrainingjune01/Output_Data/Notebook_Output/",
+  connection_type="s3",
+  updateBehavior="UPDATE_IN_DATABASE",
+  partitionKeys=[],
+  compression="snappy",
+  enableUpdateCatalog=True, 
+  transformation_ctx="s3output",
+)
+s3output.setCatalogInfo(
+  catalogDatabase="db_aws_training_exercises", catalogTableName="trg_customers"
+)
+s3output.setFormat("csv")
+s3output.writeFrame(dyf)
+
+
+-----------------------------------------------------------------------------------
+AWS Athena Creating New External Table from S3 - snappy - csv file and see the data
+-----------------------------------------------------------------------------------
+
+CREATE EXTERNAL TABLE IF NOT EXISTS `db_aws_training_exercises`.`trg_csv` (
+  `customerid` bigint,
+  `first_name` string,
+  `last_name` string,
+  `company` string,
+  `city` string,
+  `country` string,
+  `phone_1` string,
+  `phone_2` string,
+  `email` string,
+  `subscription_date` string,
+  `website` string
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+LOCATION 's3://awstrainingjune01/Output_Data/Notebook_Output/'
+TBLPROPERTIES ('skip.header.line.count' = '1');
+
+SELECT * FROM "db_aws_training_exercises"."trg_csv" limit 10;

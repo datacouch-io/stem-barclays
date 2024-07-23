@@ -1,0 +1,309 @@
+Apple Macpro Walmart Temp Password - ADEtech@2022
+--------------------------------------------------
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+
+sc = SparkContext.getOrCreate()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = job(glueContext)
+
+
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Create DynamicFrame
+datasource0 = glueContext.create_dynamic_frame.from_catalog(
+    database = "db_aws_training_exercises",
+    table_name = "txn_tbl_customer_retail",
+    transformation_ctx = "datasource0"
+)
+
+# Apply Mappings
+mapped_dyF = ApplyMapping.apply(
+    frame = datasource0,
+    mappings = [
+        ("old_col1", "string", "new_col1", "string"),
+        ("old_col2", "int", "new_col2", "int")
+    ],
+    transformation_ctx = "mapped_dyF"
+)
+
+# Filter Records
+filtered_dyF = Filter.apply(
+    frame = mapped_dyF,
+    f = lambda x: x["new_col2"] > 100,
+    transformation_ctx = "filtered_dyF"
+)
+
+# Write to S3
+glueContext.write_dynamic_frame.from_options(
+    frame = filtered_dyF,
+    connection_type = "s3",
+    connection_options = {"path": "s3://my-output-bucket/"},
+    format = "json",
+    transformation_ctx = "datasink4"
+)
+
+job.commit
+
+
+s3://awstrainingjune01/Output_Data/
+
+
+s3output = glueContext.getSink(
+  path="s3://awstrainingjune01/Output_Data/",
+  connection_type="s3",
+  updateBehavior="UPDATE_IN_DATABASE",
+  partitionKeys=[],
+  compression="snappy",
+  enableUpdateCatalog=True,
+  transformation_ctx="s3output",
+)
+s3output.setCatalogInfo(
+  catalogDatabase="demo", catalogTableName="populations"
+)
+s3output.setFormat("glueparquet")
+s3output.writeFrame(DyF)
+
+
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+
+sc = SparkContext.getOrCreate()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = job(glueContext)
+
+USING EXTERNAL FUNCTION func(description VARCHAR) RETURNS INT LAMBDA 'func'
+SELECT
+    description,
+    func(description) AS Upper_Text
+FROM
+    "db_aws_training_exercises"."txn_tbl_customer_retail";
+	
+	
+	
+	
+import json
+
+def lambda_handler(event, context):
+    try:
+        # Extract the input parameter from the event
+        input_string = event['arguments']['description']
+
+        # Calculate the length of the input string
+        result = len(input_string)
+
+        return result
+    except Exception as e:
+        return str(e)
+
+# For local testing
+if __name__ == '__main__':
+    test_event = {
+        'arguments': {
+            'col1': 'Hello, world!'
+        }
+    }
+    print(lambda_handler(test_event, None))
+	
+	
+	
+	
+import json
+
+def lambda_handler(event, context):
+    try:
+        # Extract the input parameter from the event
+        input_string = event['arguments']['description']
+
+        # Calculate the length of the input string
+        result = len(input_string)
+
+        # Return the result in a proper JSON structure
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'length': result
+            })
+        }
+    except KeyError as e:
+        # Return an error response if the expected key is missing
+        return {
+            'statusCode': 400,
+            'body': json.dumps({
+                'error': 'Bad Request',
+                'message': f'Missing key: {str(e)}'
+            })
+        }
+    except Exception as e:
+        # Return an error response for any other exceptions
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': 'Internal Server Error',
+                'message': str(e)
+            })
+        }
+
+# For local testing
+if __name__ == '__main__':
+    test_event = {
+        'arguments': {
+            'description': 'Hello, world!'
+        }
+    }
+    print(lambda_handler(test_event, None))
+
+
+
+
+USING EXTERNAL FUNCTION my_udf_function(description VARCHAR) 
+RETURNS INT 
+LAMBDA 'arn:aws:lambda:us-west-2:786461327180:function:my_udf_function'
+
+SELECT
+    my_udf_function(description) AS string_length
+FROM
+    "db_aws_training_exercises"."txn_tbl_customer_retail";
+	
+	
+
+
+
+
+{
+    "arguments": {
+        "description": "Hello, world!"
+    }
+}
+
+----------
+
+def lambda_handler(event, context):
+    try:
+        # Extract the input parameter from the event
+        input_string = event['description']
+
+        # Calculate the length of the input string
+        result = len(input_string)
+
+        # Return the result directly
+        return result
+    except KeyError as e:
+        # Return an error message if the expected key is missing
+        return f"Missing key: {str(e)}"
+    except Exception as e:
+        # Return an error message for any other exceptions
+        return str(e)
+
+# For local testing
+if __name__ == '__main__':
+    test_event = {
+        'description': 'Hello, world!'
+    }
+    print(lambda_handler(test_event, None))
+
+----------------
+{
+    "description": "Hello, world!"
+}
+
+--------
+
+USING EXTERNAL FUNCTION my_udf_function(description VARCHAR) 
+RETURNS INT 
+LAMBDA 'arn:aws:lambda:us-west-2:786461327180:function:my_udf_function'
+SELECT
+    my_udf_function(description) AS string_length
+FROM
+    "db_aws_training_exercises"."txn_tbl_customer_retail";
+	
+
+
+#### Example: Create a DynamicFrame from a table in the AWS S3
+
+# Define the input file path and delimiter
+input_file_path = 's3://awstrainingjune01/Input_Data/csv/customers-100.csv'
+delimiter = ','
+
+# Read the CSV file
+datasource0 = glueContext.create_dynamic_frame.from_options(
+    connection_type = "s3",
+    connection_options = {"paths": [input_file_path], "recurse": True},
+    format = "csv",
+    format_options = {
+        "withHeader": True,
+        "separator": delimiter
+    }
+)
+datasource0.printSchema();
+
+#### Example: Convert the DynamicFrame to a Spark DataFrame and display a sample of the data
+
+df = datasource0.toDF()
+df.show()
+
+
+#### Example: Create a DynamicFrame from a table in the AWS Glue Data Catalog and display its schema
+
+dyf = glueContext.create_dynamic_frame.from_catalog(database='db_aws_training_exercises', table_name='cst_tbl_customer_master')
+dyf.printSchema()
+
+
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS `db_aws_training_exercises`.`trg_snanppy` (
+  `customerid` bigint,
+  `first_name` string,
+  `last_name` string,
+  `company` string,
+  `city` string,
+  `country` string,
+  `phone_1` string,
+  `phone_2` string,
+  `email` string,
+  `subscription_date` string,
+  `website` string
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+LOCATION 's3://awstrainingjune01/Output_Data/Notebook_Output/'
+TBLPROPERTIES ('classification' = 'parquet');
+
+
+CREATE EXTERNAL TABLE IF NOT EXISTS `db_aws_training_exercises`.`trg_csv` (
+  `customerid` bigint,
+  `first_name` string,
+  `last_name` string,
+  `company` string,
+  `city` string,
+  `country` string,
+  `phone_1` string,
+  `phone_2` string,
+  `email` string,
+  `subscription_date` string,
+  `website` string
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+LOCATION 's3://awstrainingjune01/Output_Data/Notebook_Output/'
+TBLPROPERTIES ('skip.header.line.count' = '1');
+
+SELECT * FROM "db_aws_training_exercises"."trg_csv" limit 10;

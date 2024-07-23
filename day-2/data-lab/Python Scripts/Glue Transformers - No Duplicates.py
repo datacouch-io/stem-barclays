@@ -1,0 +1,41 @@
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+from pyspark.sql.functions import col
+
+# Initialize Glue Context and Spark Context
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Load the data into DynamicFrames
+customer_dyf = glueContext.create_dynamic_frame.from_catalog(database="your_database", table_name="customer")
+orders_dyf = glueContext.create_dynamic_frame.from_catalog(database="your_database", table_name="orders")
+
+# Convert Orders DynamicFrame to DataFrame to remove duplicates
+orders_df = orders_dyf.toDF()
+
+# Remove duplicates based on specified columns (e.g., order_id)
+orders_df_no_duplicates = orders_df.dropDuplicates(["order_id"])
+
+# Convert back to DynamicFrame
+orders_dyf_no_duplicates = DynamicFrame.fromDF(orders_df_no_duplicates, glueContext, "orders_dyf_no_duplicates")
+
+# Join the DynamicFrames
+joined_dyf = Join.apply(customer_dyf, orders_dyf_no_duplicates, 'customer_id', 'customer_id')
+
+# Write the result to a target, e.g., S3
+glueContext.write_dynamic_frame.from_options(
+    frame=joined_dyf,
+    connection_type="s3",
+    connection_options={"path": "s3://your-bucket/your-prefix/"},
+    format="parquet"
+)
+
+job.commit()

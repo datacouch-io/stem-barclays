@@ -1,0 +1,31 @@
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql import SparkSession
+
+# Initialize Spark and Glue contexts
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+# Load raw data from S3
+raw_data = glueContext.create_dynamic_frame.from_catalog(database="your_database_name", table_name="your_table_name")
+
+# Convert DynamicFrame to DataFrame
+df = raw_data.toDF()
+
+# Perform data cleaning operations
+cleaned_df = df.dropna()  # Example: Remove rows with missing values
+
+# Convert DataFrame back to DynamicFrame
+cleaned_data = DynamicFrame.fromDF(cleaned_df, glueContext, "cleaned_data")
+
+# Write cleaned data to S3
+glueContext.write_dynamic_frame.from_options(
+    frame=cleaned_data,
+    connection_type="s3",
+    connection_options={"path": "s3://your_bucket_name/cleaned_data/"},
+    format="csv"
+)
+
+print("Data cleaning and writing to S3 completed successfully.")

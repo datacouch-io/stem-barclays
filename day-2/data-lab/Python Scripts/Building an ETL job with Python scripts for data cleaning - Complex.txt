@@ -1,0 +1,99 @@
+import sys
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, lower, trim
+from awsglue.utils import getResolvedOptions
+from awsglue.job import Job
+import logging
+
+# Initialize Spark and Glue contexts
+sc = SparkContext.getOrCreate()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+# Set up logging
+logger = logging.getLogger('ETLJob')
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+# Get job arguments
+args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+job = Job(glueContext)
+job.init(args['JOB_NAME'], args)
+
+# Define S3 paths
+input_path = 's3://your-input-bucket/raw_data/'
+output_path = 's3://your-output-bucket/cleaned_data/'
+
+# Step 1: Extract - Load raw data from S3
+try:
+    logger.info("Loading raw data from S3...")
+    raw_data = glueContext.create_dynamic_frame.from_options(
+        connection_type="s3",
+        connection_options={"paths": [input_path], "recurse": True},
+        format="csv",
+        format_options={"withHeader": True, "separator": ','}
+    )
+    logger.info("Data loaded successfully.")
+except Exception as e:
+    logger.error(f"Failed to load data from S3: {e}")
+    job.commit()
+    sys.exit(1)
+
+# Step 2: Transform - Clean and transform the data
+try:
+    logger.info("Starting data transformation...")
+
+    # Convert DynamicFrame to DataFrame for easier manipulation
+    df = raw_data.toDF()
+
+    # Perform data cleaning and transformations
+    cleaned_df = (
+        df
+        .withColumn('customerid', trim(col('customerid')))
+        .withColumn('first_name', lower(trim(col('first_name'))))
+        .withColumn('last_name', lower(trim(col('last_name'))))
+        .withColumn('company', trim(col('company')))
+        .withColumn('city', trim(col('city')))
+        .withColumn('country', trim(col('country')))
+        .withColumn('phone_1', trim(col('phone_1')))
+        .withColumn('phone_2', trim(col('phone_2')))
+        .withColumn('email', lower(trim(col('email'))))
+        .withColumn('subscription_date', trim(col('subscription_date')))
+        .withColumn('website', lower(trim(col('website'))))
+        .dropna()
+    )
+
+    # Additional transformations and validations can be added here
+    logger.info("Data transformation completed successfully.")
+except Exception as e:
+    logger.error(f"Data transformation failed: {e}")
+    job.commit()
+    sys.exit(1)
+
+# Step 3: Load - Save the cleaned data to S3
+try:
+    logger.info("Writing cleaned data to S3...")
+    cleaned_data = DynamicFrame.fromDF(cleaned_df, glueContext, "cleaned_data")
+    glueContext.write_dynamic_frame.from_options(
+        frame=cleaned_data,
+        connection_type="s3",
+        connection_options={"path": output_path},
+        format="csv",
+        format_options={"writeHeader": True}
+    )
+    logger.info("Cleaned data written to S3 successfully.")
+except Exception as e:
+    logger.error(f"Failed to write cleaned data to S3: {e}")
+    job.commit()
+    sys.exit(1)
+
+# Commit the job
+job.commit()
+logger.info("ETL job completed successfully.")

@@ -1,0 +1,40 @@
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+
+# Create a GlueContext
+sc = SparkContext()
+glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
+# Initialize the job
+job = Job(glueContext)
+job.init(sys.argv[0], args)
+
+# Read data from a source
+datasource = glueContext.create_dynamic_frame.from_catalog(database = "database_name", table_name = "table_name")
+
+# Apply transformations
+# For example, let's say we want to partition the data by the 'date' column and bucket it by the 'customer_id' column
+transformed_data = ApplyMapping.apply(frame = datasource, mappings = [("date", "string", "date"), ("customer_id", "int", "customer_id")])
+
+# Write the transformed data to a target location in S3 with partitioning and bucketing
+datasink = glueContext.write_dynamic_frame.from_catalog(frame = transformed_data, database = "database_name", table_name = "table_name", transformation_ctx = "datasink")
+
+# Specify partition keys and bucket keys
+datasink_options = {
+    "partitionKeys": ["date"],
+    "bucketKeys": ["customer_id"]
+}
+
+# Write the data to the target location
+datasink_options["path"] = "s3://bucket_name/path"
+datasink_options["partitionKeys"] = ["date"]
+datasink_options["bucketKeys"] = ["customer_id"]
+glueContext.write_dynamic_frame.from_options(frame = transformed_data, connection_type = "s3", connection_options = datasink_options)
+
+# Commit the job
+job.commit()

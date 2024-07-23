@@ -1,0 +1,26 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, trim, when
+
+# Step 1: Create a Spark session
+spark = SparkSession.builder \
+    .appName("DataCleaningJob") \
+    .getOrCreate()
+
+# Step 2: Load data from a CSV file
+df = spark.read.csv("path_to_csv_file.csv", header=True, inferSchema=True)
+
+# Step 3: Data Cleaning
+df = df.dropDuplicates()
+df = df.dropna()
+df = df.withColumn("column_name", col("column_name").lower())
+df = df.withColumn("column_name", trim(col("column_name")))
+
+# Step 4: Data Transformation
+df = df.withColumn("column_name", when(col("column_name") == "value1", 1).otherwise(0))
+# Add more transformation steps as needed
+
+# Step 5: Write cleaned data to a new CSV file
+df.write.csv("path_to_cleaned_csv_file.csv", header=True)
+
+# Step 6: Stop the Spark session
+spark.stop()

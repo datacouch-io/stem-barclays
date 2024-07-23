@@ -1,4 +1,4 @@
-## [Transform Data Using Apache Spark on Amazon EMR](https://app.pluralsight.com/labs/play/d49996a8-5a35-4b78-99a0-592e025fd6d9/task/1)
+# Transform Data Using Apache Spark on Amazon EMR
 
 ### Step 1: Configure a Subnet for EMR Cluster
 

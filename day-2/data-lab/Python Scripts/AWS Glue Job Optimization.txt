@@ -1,0 +1,73 @@
+-------------------------
+AWS Glue Job Optimization
+-------------------------
+Referece Video
+-------------- https://www.youtube.com/watch?v=aRDewRsoWVQ&list=PL8RIJKpVAN1f2krw8mBeo1Hcyk9O0JsCn
+
+-----------------------------------------------------------------------
+S3 Data Processing via S3 File Optimization with Less Data vs Full Data
+-----------------------------------------------------------------------
+
+customersdf = glueContext.create_dynamic_frame.from_catalog(
+             database="dojodb",
+             table_name="customers")
+customersdf.count()
+
+customersdf = Filter.apply(customersdf, f = lambda x: x["spending"] ==  "High")
+customersdf.count()
+
+customersdf1 = glueContext.create_dynamic_frame.from_catalog(
+             database="dojodb",
+             table_name="customers",
+             push_down_predicate = "(spending == 'High')")
+customersdf1.count()
+
+customersdf1 = glueContext.create_dynamic_frame.from_catalog(
+             database="dojodb",
+             table_name="customers",
+             push_down_predicate = "(spending == 'High' and profession == 'Engineer')")
+customersdf1.count()
+			 
+----------------------------------------------
+Reading JDBC SQL Data Processing in Partitions 
+----------------------------------------------
+
+fooddf1 = glueContext.create_dynamic_frame.from_catalog(
+    database="dojodb",
+    table_name="postgres_public_fooddemand",
+    additional_options = {
+            'hashfield': 'week',
+            'hashpartitions': '5'
+    }
+)
+
+------------------------------------------
+Reading s3 Files in Partition Group & Size
+------------------------------------------
+
+sensordf = glueContext.create_dynamic_frame.from_options(
+    format_options={},
+    connection_type="s3",
+    format="parquet",
+    connection_options=
+	{
+	"paths": ["s3://dojo-mydata/sensordata/"], "recurse": True, 
+	'groupFiles': 'inPartition', 
+	'groupSize': '1048576'
+	}
+)
+
+------------------------------------------
+Reading s3 Files Spill & Shuffle and 
+------------------------------------------
+
+--write-shuffle-files-to-s3 : true
+--write-shuffle-spills-to-s3 : true
+--conf : spark.shuffle.glue.s3shufflebucket=s3://dojo-mydata/shuffle
+
+---------------------------------------------
+AWS GLUE - Job Parameter = Performance Tuning
+---------------------------------------------
+--conf spark.sql.autoBroadcastJoinThreshold=10485760
+
+--conf spark.sql.autoBroadcastJoinThreshold=268435456
