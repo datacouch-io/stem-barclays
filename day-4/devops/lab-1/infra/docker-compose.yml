@@ -1,0 +1,13 @@
+services:
+
+  gogs:
+    image: courselabs/gogs:0.12.3
+    ports:
+      - "3000:3000"
+
+  jenkins:
+    image: thecodecamp/jenkins:2.426-alpine-jdk21-preview
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

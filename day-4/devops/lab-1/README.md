@@ -1,68 +1,63 @@
-## [Deploy an Application to Multiple EC2 Instances with AWS CodeDeploy](https://app.pluralsight.com/labs/detail/239d6cfb-ed92-4c18-8f7d-252979d96a36/toc)
+# Automation with Jenkins
 
-This section contains step-3 of the above mentioned lab because the instructions are outdated.
+[Jenkins](https://jenkins.io) is probably the most popular automation server around - but popular in terms of being well used rather than being liked. It's been around a long time and one of the main features is its extensibility: it has a plugin framework with over [1800 published plugins](https://plugins.jenkins.io) which you can use to build any type of application, or integrate with any third-party system. There's a web UI you can use to define jobs, which get stored on the server's filesystem.
 
-### Step 3: Prepare an EC2 Instance for Use with CodeDeploy
+The UI and the plugins are one of the main reasons people don't like Jenkins. Plugins are prone to security flaws so they need frequent updates, but they can be fiddly to automate. You tend to find Jenkins servers are maintained long after they should have been decomissioned, because no-one's sure if they'd be able to recreate the exact set of plugins and load all the job definitions from the old server. We'll use Jenkins in a different way, with minimal plugins and job definitions stored in source control.
 
-1. At the top of the page in the search bar, type in and then click on **EC2**.
+## Running Jenkins
 
-    **Note**: Before continuing, make sure your AWS region in the top-right corner of the screen is set to **US West Oregon**.
+Start by running Jenkins inside a Docker container, along with a local Git server (using Gogs):
 
-2. In the left-hand **EC2 Dashboard** navigation menu, click Instances.
+```
+docker compose -f labs/jenkins/infra/docker-compose.yml up -d
+```
 
-3. Click on the **Launch instances** button.
+> This is a custom setup of Jenkins with a few plugins already installed.
 
-4. Under the Name and tags section, enter `CodeDeployTestInstance` for **Name**.
+Browse to Jenkins at http://localhost:8080. You may see a page saying "Jenkins is getting ready to work" - it can take a few minutes for a new server to come online. When you see the home page, click the log in link and sign in with these admin credentials:
 
-5. Under the **Application and OS Images (Amazon Machine Image)** select Amazon **Linux 2 AMI (HVM)** from the Amazon Machine Image (AMI) dropdown.
+- username: `courselabs`
+- password: `student`
 
-6. Under the **Instance type** dropdown, select **t3.medium**.
+Check out the UI - it's slightly "web 1.0". The left nav takes you to the main options, including the menu to manage Jenkins; the central section will show a list of jobs once you have created some. 
 
-7. In the **Key pair (login)** section, choose **Proceed without a key pair** from the dropdown.
+## Creating a Freestyle Job
 
-8. Under **Network settings**, click the **Edit** button.
+We'll create a classic Jenkins job - using the freestyle type where you build up the steps using the web UI:
 
-9. For **Security group name**, enter `CodeDeploySecurityGroup`.
+- click _Create a job_ on the home screen
+- call the new job `lab-1`
+- set the job type to be _Freestyle project_
+- click _OK_
 
-10. Under **Security group rule 1**, select **HTTP** from the **Type** dropdown select **HTTP**. And make sure **0.0.0.0/0** is selected under Source.
+This creates the new job. There are different sections of the UI which represent typical stages of a build - source code connection details, the build triggers and the build steps.
 
-11. Expand **Advanced Details**.
+We'll use this job to run a simple script which prints some text:
 
-  - Select **IAM instance profile** role for instance as `CodeDeployDemoEC2`
-  -  Paste in this user data script under **User data**.
+- scroll down to the _Build_ section
+- click _Add build step_
+- select _Execute shell_
+- paste this into the _Command_ box:
 
-  ```sh
-  #!/bin/bash
-  yum -y update
-  yum install -y ruby
-  yum install -y aws-cli
-  cd /home/ec2-user
-  wget https://aws-codedeploy-us-west-2.s3.us-west-2.amazonaws.com/latest/install
-  chmod +x ./install
-  ./install auto
-  sudo yum update -y
-  sudo yum install -y httpd
-  sudo systemctl enable httpd
-  sudo systemctl start httpd
-  find /var/www -type d -exec chmod 2775 {} \;
-  find /var/www -type f -exec chmod 0664 {} \;
-  echo "<h1> This is version 1 of application. </h1>" > /var/www/html/index.html
-  ```
+```
+echo "This is build number: $BUILD_NUMBER of job: $JOB_NAME"
+```
 
-12. Under **Summary**, enter `2` for Number of instances.
+- click _Save_
 
-13. Finally, click **Launch Instance**.
+> Jenkins populates [a set of environment variables](http://localhost:8080/env-vars.html/) when it runs the job, which are accessible in the job steps. This script prints out the build number - which is an incrementing count of the number of times the job has run - and the job name.
 
-14. Click on the **View all instances** button, then wait for the **Status check** column fields to each display **2/2 checks passed**.
+Now you're in the main job window. The left nav lets you configure the job again, and the central section will show the recent runs of the job.
 
-    Note: It will take about three to five minutes for the fields to change from – or **Initializing**. You can click the refresh button to get an update periodically.
+Click _Build Now_ to run the job. When the build finishes check the output in http://localhost:8080/job/lab-1/1/console
 
-15. Select one instance and copy its **Auto-assigned IP address**, then open a new browser tab to that address.
+📋 Build the job again - how is the output different?
 
-    Note: You need to use `http`, not https. For example, if the IP was 127.0.0.1 go to http://127.0.0.1
+<details>
+  <summary>Not sure?</summary>
 
-16. Do the same thing with the other instance.
+Click _Build Now_ again. When the job completes you can see the output at http://localhost:8080/job/lab-1/2/console
 
-Each browser tab will open to a simple page displaying **This is version 1 of application**. You have successfully configured your AWS EC2 instances for use with CodeDeploy.
+The job name is the same, but the number has incremented.
 
-Note: To make the final challenge quicker, you can keep tabs to this IPs open, and for the final challenge just refresh each tab.
+</details><br/>
