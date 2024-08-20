@@ -1,6 +1,21 @@
 ## A Single EC2 Instance in a Private Subnet + Bastion Host
 
 
+This lab is designed to demonstrate how to securely access an EC2 instance deployed in a private subnet by using a bastion host in a public subnet. A bastion host acts as a gateway for accessing instances in private subnets, ensuring that the instances themselves do not need to have direct internet access, which enhances security.
+
+### Why Use a Bastion Host?
+
+-   **Security:**  By placing your EC2 instances in a private subnet, you reduce the attack surface, as these instances are not directly exposed to the internet.
+-   **Controlled Access:**  The bastion host serves as the only point of entry to your private instances, allowing you to enforce strict access controls.
+-   **Cost Efficiency:**  Instead of requiring a dedicated VPN or direct connect, a bastion host provides a simple and cost-effective method to access your private instances securely.
+
+### Lab Objectives
+
+-   Set up a Virtual Private Cloud (VPC) with both public and private subnets.
+-   Deploy an EC2 instance in the public subnet to serve as a bastion host.
+-   Deploy an EC2 instance in the private subnet that can only be accessed via the bastion host.
+-   Demonstrate secure access to the EC2 instance in the private subnet through the bastion host.
+
 ## Goal
 The goal of this lab is to demonstrate how to access an EC2 instance launched in a private subnet using a bastion host.
 

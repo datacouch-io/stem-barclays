@@ -1,5 +1,21 @@
 ## A Standalone RDS Instance Running MySQL
 
+
+Amazon Relational Database Service (RDS) is a fully managed relational database service provided by AWS. It simplifies the process of setting up, operating, and scaling a relational database in the cloud. In this lab, you will learn how to launch a standalone RDS instance running MySQL, one of the most popular open-source relational database management systems. The lab will also involve setting up an EC2 instance configured with Apache and phpMyAdmin, a web-based tool that provides an easy-to-use interface for managing MySQL databases.
+
+This hands-on experience will help you understand the basics of deploying and interacting with an RDS instance and how to securely connect it to a web-based administration tool hosted on an EC2 instance. By the end of this lab, you will have a functional MySQL database that you can manage via phpMyAdmin.
+
+## Why Use Amazon RDS?
+
+-   **Managed Service:**  Amazon RDS takes care of routine database tasks such as backups, patching, and scaling, freeing you up to focus on your application.
+-   **High Availability:**  RDS supports Multi-AZ deployments, ensuring that your database is highly available and fault-tolerant, though this lab focuses on a single AZ setup for simplicity.
+-   **Scalability:**  RDS allows you to scale your database's compute and storage resources easily to meet the demands of your application.
+-   **Security:**  RDS integrates with AWS Identity and Access Management (IAM), enabling you to control access to your databases securely.
+-   **Cost-Effective:**  With pay-as-you-go pricing and the option to start with the free tier, RDS provides a cost-effective solution for managing relational databases in the cloud.
+
+This lab is designed to give you a practical understanding of how to deploy and manage a MySQL database using Amazon RDS and how to set up a secure connection between the database and a web-based management tool running on an EC2 instance.
+
+
 ## Goal
 This lab illustrates how to launch a standalone RDS instance running a MySQL database. An EC2 instance will also be launched to allow access to the database using phpMyAdmin. [Here](../images/RDS.png) is a mind map of RDS.
 

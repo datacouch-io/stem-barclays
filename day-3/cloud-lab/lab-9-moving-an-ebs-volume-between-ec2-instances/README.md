@@ -1,5 +1,18 @@
 ## Moving an EBS Volume Between EC2 Instances
 
+Amazon Elastic Block Store (EBS) is a scalable and high-performance block storage service designed for use with Amazon EC2 instances. One of the key features of EBS is its ability to detach from one EC2 instance and reattach to another, making it possible to move data between instances without any data loss. This capability is particularly useful in scenarios where you need to migrate workloads, backup data, or troubleshoot issues without losing access to critical data.
+
+In this lab, you will learn how to create an EBS volume, attach it to an EC2 instance, and then move that EBS volume to a different EC2 instance. By the end of the lab, you will be able to seamlessly transfer data stored in an EBS volume between two separate EC2 instances.
+
+## Why Move an EBS Volume Between EC2 Instances?
+
+-   **Data Migration:**  Moving an EBS volume allows you to migrate data from one instance to another, which can be useful during upgrades, scaling, or transitioning between environments.
+-   **Backup and Recovery:**  If you need to back up data from one instance and restore it to another, moving the EBS volume is an efficient method.
+-   **Troubleshooting and Maintenance:**  When performing maintenance or troubleshooting, you might need to temporarily move a volume to another instance for analysis or recovery.
+-   **Scaling Applications:**  As your application grows, you might need to move storage volumes to instances with higher capacity or different configurations to handle increased demand.
+
+This lab will guide you through the process of creating an EBS volume, attaching it to an EC2 instance, and then detaching and reattaching it to another instance, ensuring that the data remains intact and accessible throughout the process.
+
 ## Goal
 The goal of this lab is to illustrate how to move an EBS volume from one EC2 instance to another.
 

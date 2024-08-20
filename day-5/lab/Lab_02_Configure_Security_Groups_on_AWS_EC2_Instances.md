@@ -1,6 +1,16 @@
 # Configure Security Groups on AWS EC2 Instances
 
+Security groups are essential components of AWS EC2 instances, serving as virtual firewalls that control the inbound and outbound traffic to your instances. This lab provides a step-by-step guide on how to configure security groups to allow HTTP access to an EC2 instance. Additionally, you will learn how to troubleshoot and adjust network access control lists (ACLs) to ensure that traffic can reach your EC2 instance as intended.
 
+### Why Configure Security Groups on AWS EC2 Instances?
+
+Security is a top priority when managing cloud infrastructure. Security groups allow you to define rules that dictate which traffic is allowed to reach your EC2 instances. Properly configuring these rules is crucial for:
+
+-   **Controlling Access:**  Security groups allow you to restrict access to your EC2 instances to specific IP addresses, ranges, or types of traffic, reducing the attack surface.
+-   **Enhancing Security:**  By limiting the types of connections that can be made to your instances, you protect your applications from unauthorized access and potential attacks.
+-   **Ensuring Compliance:**  Configuring security groups helps ensure that your infrastructure complies with industry standards and regulations by enforcing strict access controls.
+
+In this lab, you will configure a security group to allow HTTP traffic to a proof-of-concept website hosted on an EC2 instance. You'll also troubleshoot network ACL issues that could prevent traffic from reaching the instance, ensuring that your web server is accessible to users.
 
 ### Table of Contents
 

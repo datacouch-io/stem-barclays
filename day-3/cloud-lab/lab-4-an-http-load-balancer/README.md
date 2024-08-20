@@ -1,5 +1,21 @@
 ## An HTTP Load Balancer
 
+This lab is designed to guide you through the process of setting up an HTTP Load Balancer using an AWS Application Load Balancer (ALB) to distribute incoming web traffic across two EC2 instances deployed in different Availability Zones. By the end of this lab, you will have a functional load-balanced architecture that can handle web traffic efficiently and ensure high availability for your application.
+
+### Why Use an Application Load Balancer?
+
+-   **Traffic Distribution:**  An Application Load Balancer automatically distributes incoming application traffic across multiple targets, such as EC2 instances, ensuring that no single instance is overwhelmed by traffic.
+-   **High Availability:**  By distributing traffic across multiple instances in different Availability Zones, the ALB ensures your application remains available even if one instance or AZ fails.
+-   **Scalability:**  The ALB supports automatic scaling, allowing your application to handle varying amounts of traffic effectively.
+-   **Enhanced Security:**  The ALB integrates with AWS security services, such as AWS WAF (Web Application Firewall), to provide additional layers of protection for your application.
+
+### Lab Objectives
+
+-   Set up a Virtual Private Cloud (VPC) with two public subnets in different Availability Zones.
+-   Deploy two EC2 instances in separate subnets, each running a simple web server.
+-   Configure an Application Load Balancer to distribute HTTP requests across the two instances.
+-   Test the load balancer to ensure it distributes traffic correctly and handles instance failures gracefully.
+
 ## Goal
 The goal of this lab is to illustrate how to use an [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html) to distribute requests over two web servers running on distinct Availability Zones. [Here](../images/ELB.png) is a mind map of ELB (Elastic Load Balancing).
 

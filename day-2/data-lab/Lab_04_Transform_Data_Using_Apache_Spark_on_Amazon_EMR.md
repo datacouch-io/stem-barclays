@@ -1,5 +1,20 @@
 # Transform Data Using Apache Spark on Amazon EMR
 
+In this tutorial, you'll learn how to set up and configure an Amazon EMR cluster to run Apache Spark jobs, enabling you to process and transform large datasets efficiently. This guide walks you through creating a subnet for your EMR cluster, setting up the cluster, and running Spark jobs for data transformation. By following these steps, you will gain hands-on experience in setting up a distributed data processing environment, which is essential for large-scale data engineering tasks.
+
+## Why Use Apache Spark on Amazon EMR?
+
+Apache Spark is a powerful open-source data processing engine that is widely used for large-scale data processing due to its speed, ease of use, and ability to handle complex data transformations. When deployed on Amazon EMR, Spark can take advantage of the scalability and flexibility of AWS infrastructure, allowing you to process vast amounts of data quickly and cost-effectively.
+
+### Benefits of Using Spark on EMR:
+
+-   **Scalability:**  Easily scale your data processing capabilities by adjusting the size and number of instances in your EMR cluster.
+-   **Cost-Efficiency:**  Leverage AWS's pay-as-you-go pricing model and lifecycle policies to optimize costs.
+-   **Integration with AWS Services:**  Seamlessly integrate with other AWS services like S3, allowing for efficient data storage, retrieval, and processing.
+-   **Managed Environment:**  EMR manages the underlying infrastructure, freeing you from the complexities of setting up and maintaining a distributed processing environment.
+
+By using Apache Spark on Amazon EMR, you can efficiently transform and analyze large datasets, enabling your analytics team to derive valuable insights from raw data.
+
 ### Step 1: Configure a Subnet for EMR Cluster
 
 Globomantics is an analytics firm that processes raw data/logs to reap rich insights. Your role as a Data Engineer is to pre-process/massage data, so that the analytics team can use the data for further data modelling. You will use the Spark ETL stack on Amazon EMR cluster to transform the data, in this challenge you will set up a subnet that will be used by Amazon EMR cluster.

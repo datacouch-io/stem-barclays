@@ -1,6 +1,19 @@
 # Configure a Network Assessment in Amazon Inspector
 
 
+Amazon Inspector is a powerful security assessment service that helps you identify vulnerabilities and potential security issues within your AWS environment. By configuring and running network assessments, you can evaluate the security of your network configurations, identify exposed ports, and receive actionable recommendations to improve your security posture.
+
+### Why Run a Network Assessment with Amazon Inspector?
+
+Running a network assessment with Amazon Inspector provides several key benefits:
+
+1.  **Identify Vulnerabilities:**  Detect open ports and insecure network configurations that could be exploited by attackers.
+2.  **Comprehensive Security Analysis:**  Gain insights into the overall security of your AWS network, including potential weaknesses in security groups and access control lists (ACLs).
+3.  **Automated Security Checks:**  Set up recurring assessments to continuously monitor and safeguard your environment against evolving threats.
+4.  **Actionable Insights:**  Receive detailed findings with recommendations to address security issues and strengthen your network's defenses.
+
+In this guide, you will learn how to configure and run a basic network assessment using Amazon Inspector, create an advanced assessment configuration for specific targets, and evaluate the assessment findings to address potential security issues.
+
 ### Table of Contents  
 - [Run a Basic Network Assessment](#run-a-basic-network-assessment)
 - [Create an Advanced Assessment Configuration](#create-an-advanced-assessment-configuration)

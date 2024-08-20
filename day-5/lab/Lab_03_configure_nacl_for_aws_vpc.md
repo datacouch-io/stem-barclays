@@ -1,6 +1,16 @@
 # Configure a Network Access Control List (NACL) for an AWS VPC
 
+Network Access Control Lists (NACLs) in AWS are essential tools for enhancing security within your Virtual Private Cloud (VPC). They function as stateless firewalls that allow or deny traffic to and from your subnets. Unlike security groups, which are associated with instances, NACLs are associated with subnets, providing an additional layer of security control.
 
+### Why Configure NACLs in AWS VPC?
+
+Configuring NACLs is crucial for the following reasons:
+
+1.  **Enhanced Security:**  NACLs help enforce strict traffic controls at the subnet level, allowing or denying traffic based on IP addresses, protocols, and ports.
+2.  **Fine-Grained Control:**  With NACLs, you can implement detailed security policies, such as allowing traffic on specific ports while blocking others, which might be necessary for compliance or security best practices.
+3.  **Layered Security:**  NACLs provide an additional security layer that complements security groups, offering more comprehensive protection for your AWS resources.
+
+In this lab, you will explore the default NACL behavior, create custom NACLs, and associate them with subnets to enforce specific security policies. This hands-on approach will deepen your understanding of how NACLs operate within an AWS environment and how they can be configured to meet the security needs of your organization.
 
 ### Table of Contents
 

@@ -1,6 +1,17 @@
 # Creating AWS Athena Table from S3 Data
 
-This lab will guide you through the steps to create a table in AWS Athena from data stored in an S3 bucket. By the end of this lab, you will have a functioning Athena table that you can query.
+This lab will guide you through the steps to create a table in AWS Athena from data stored in an S3 bucket. AWS Athena is an interactive query service that makes it easy to analyze data directly in Amazon S3 using standard SQL. By the end of this lab, you will have a functioning Athena table that you can query to gain insights from your data.
+
+## Why Use AWS Athena?
+
+AWS Athena is a powerful tool for querying data stored in S3 without needing to set up or manage any servers. It is especially useful for:
+
+-   **Cost-Effective Analysis:**  Athena charges only for the queries you run, allowing you to analyze data at a low cost.
+-   **Serverless Architecture:**  No infrastructure to manage—just point to your data in S3 and start querying.
+-   **Ease of Use:**  Standard SQL queries make it simple for users with SQL knowledge to get started quickly.
+-   **Integration with AWS Services:**  Seamlessly integrates with AWS services like S3, Glue, and QuickSight for a full data processing and analysis pipeline.
+
+Using Athena allows you to quickly and easily gain insights from your data stored in S3, making it an ideal tool for data exploration and analysis.
 
 ## Let’s get started
 

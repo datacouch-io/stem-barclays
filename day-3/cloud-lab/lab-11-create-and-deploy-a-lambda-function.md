@@ -1,6 +1,17 @@
 # Create and Deploy a Lambda Function
 
-Your company plans to implement AWS Lambda Functions to establish a serverless architecture. You need to create a proof of concept demonstrating the ability to develop and invoke a Lambda function that generates random numbers.
+
+AWS Lambda is a powerful, event-driven, serverless computing service that allows you to run code in response to events without provisioning or managing servers. In this guide, you will create a Lambda function that generates a random number, demonstrating the ease and flexibility of deploying serverless functions using AWS Lambda.
+
+## Why Use AWS Lambda?
+
+-   **Scalability:**  AWS Lambda automatically scales your applications by running code in response to each event. It can handle a few requests per day or thousands per second.
+-   **Cost Efficiency:**  With AWS Lambda, you pay only for what you use. There are no charges when your code is not running, and you are billed based on the number of requests and the compute time your code consumes.
+-   **Focus on Code:**  AWS Lambda allows developers to focus on writing code rather than managing infrastructure. You don't need to worry about server provisioning, scaling, or patching.
+-   **Integration:**  Lambda integrates seamlessly with other AWS services, such as S3, DynamoDB, API Gateway, and more, enabling the creation of powerful, event-driven applications.
+
+In this exercise, you will create a simple Lambda function to generate a random number, demonstrating the basics of working with AWS Lambda. You'll also learn how to deploy and test your function, which lays the foundation for more complex serverless applications.
+
 
 1.  Access the AWS Console by entering the username and Password provided by this lab, and then clicking the Open AWS Console button.
 

@@ -1,6 +1,15 @@
 # Store Secrets for Amazon EC2 in the Parameter Store
 
 
+This guide will walk you through the process of securely storing and retrieving secrets using AWS Systems Manager Parameter Store. You will also learn how to use the stored secrets to create an RDS instance through CloudFormation and access it using the AWS CLI.
+
+### Why Use Parameter Store?
+
+Storing secrets like database passwords in a secure, managed service such as AWS Systems Manager Parameter Store provides several key benefits:
+
+1.  **Security:**  Secrets are stored securely and can be encrypted with AWS Key Management Service (KMS).
+2.  **Centralized Management:**  Manage secrets in a central location, reducing the risk of hardcoded secrets in your application code.
+3.  **Ease of Access:**  Access secrets easily from AWS services like EC2, Lambda, and RDS without exposing them in the environment.
 
 ### Table of Contents  
 - [Create a Secure Parameter](#create-a-secure-parameter)
